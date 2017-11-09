@@ -384,3 +384,25 @@ isVolumeSizeGreaterOrEqual()
     fi
   fi
 }
+
+
+# Сохраняет оригинальный файл, выполнив действия:
+#  - добавляет к его имени суфикс '.orig';
+#  - удаляет строки комментариев и пустые строки.
+# $1 - имя файла
+function copyOrigFile()
+{
+  local fileName=$1
+  if [[ -n $fileName && -f $fileName ]]; then
+    varDump 'fileName' $0:$LINENO
+    local origPostfix='.orig'
+    local fileNameOrig="${fileName}${origPostfix}"
+    if [[ -f $fileNameOrig ]]; then
+      fileNameOrig="${fileNameOrig}.$(date +%Y%m%d_%H%M)"
+    fi
+    varDump 'fileNameOrig' $0:$LINENO
+
+    mv $fileName $fileNameOrig && \
+    sed '/^#/d;/^$/d' $fileNameOrig > $fileName
+  fi
+}
